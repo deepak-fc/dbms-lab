@@ -1,0 +1,1 @@
+-- Confusion in creating tables. Subject column given in queries but not provided in table creation.
