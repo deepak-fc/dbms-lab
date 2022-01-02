@@ -6,7 +6,6 @@ DROP TABLE IF EXISTS account;
 DROP TABLE IF EXISTS customer;
 DROP TABLE IF EXISTS branch;
 
-
 -- Table creation
 CREATE TABLE customer(
 	cust_no INT,
@@ -45,3 +44,53 @@ CREATE TABLE loan(
 );
 
 -- Insert values
+INSERT INTO customer VALUES
+(1, "Vijay Mallya", "Park Street", "Pune"),
+(2, "Nirav Modi", "Regent Street", "Satara"),
+(3, "Fahed", "Oxford Street", "Mumbai"),
+(4, "Rohit", "Bond Street", "Nagpur"),
+(5, "Saurabh", "Vine Street", "Nashik");
+
+INSERT INTO branch VALUES
+(1, "F.C Road", "Pune"),
+(2, "M.G Road", "Mumbai"),
+(3, "Shivajinagar", "Pune"),
+(4, "Pashan", "Nashik"),
+(5, "Aundh", "Akola");
+
+INSERT INTO account VALUES
+(1, "Savings", 200000, 1, 1),
+(2, "Salary", 150000, 2, 3),
+(3, "Current", 75000, 3, 1),
+(4, "Business", 96750, 4, 2),
+(5, "Checking", 325000, 5, 5),
+(6, "Checking", 87000, 1, 5),
+(7, "Business", 96000, 2, 3);
+
+INSERT INTO loan VALUES
+(1, 80000, 2, 1, 1),
+(2, 500000, 1, 2, 3),
+(3, 350000, 2, 3, 1),
+(4, 900000, 3, 1, 1),
+(5, 4000000, 6, 2, 3);
+
+-- Create View
+CREATE OR REPLACE VIEW CustomerAccountDetails AS
+SELECT c.*, a.acc_type, a.balance, b.branch_name, b.branch_city
+FROM account a
+JOIN customer c USING(cust_no)
+JOIN branch b USING(branch_no);
+
+CREATE OR REPLACE VIEW FCRoadLoanDetails AS
+SELECT l.loan_no, l.loan_amt, l.no_of_years, c.cust_name, b.branch_name 
+FROM loan l
+JOIN customer c USING(cust_no)
+JOIN branch b USING(branch_no)
+WHERE b.branch_name = "F.C Road";
+
+-- Display View
+SELECT *
+FROM CustomerAccountDetails;
+
+SELECT *
+FROM FCRoadLoanDetails;
