@@ -69,7 +69,7 @@ INSERT INTO cust_call_info VALUES
 (1, 1, 200, 250, "jan-feb"),
 (2, 2, 300, 360, "feb-oct"),
 (3, 3, 90, 435, "apr-nov"),
-(4, 4, 150, 208, "oct-dec"),
+(4, 4, 150, 208, "jan-feb"),
 (5, 5, 80, 285, "may-june");
 
 INSERT INTO bill VALUES
@@ -98,3 +98,49 @@ FROM MrsJoshiBillDetails;
 
 SELECT *
 FROM Plan1CustomerDetails;
+
+-- Drop Functions
+DROP FUNCTION IF EXISTS totalNumberOfCalls;
+DROP FUNCTION IF EXISTS customerCountForPlan;
+
+-- Create Functions
+delimiter //
+CREATE FUNCTION totalNumberOfCalls(cyclePeriod VARCHAR(20))
+RETURNS INT
+NOT DETERMINISTIC
+READS SQL DATA
+BEGIN
+	DECLARE totalCalls INT;
+	
+    SELECT SUM(no_of_calls)
+    INTO totalCalls
+    FROM cust_call_info
+	WHERE cycle_period = cyclePeriod;
+    
+	RETURN totalCalls;
+END//
+delimiter ;
+
+
+delimiter //
+CREATE FUNCTION customerCountForPlan(planName VARCHAR(20))
+RETURNS INT
+NOT DETERMINISTIC
+READS SQL DATA
+BEGIN
+    DECLARE customerCount INT;
+    
+    SELECT COUNT(c.cust_no)
+    INTO customerCount
+    FROM customer2 c
+    JOIN plan p USING(plan_no)
+    WHERE p.p_name = planName;
+	
+    RETURN customerCount;
+END//
+delimiter ;
+
+
+-- View Functions
+SELECT TOTALNUMBEROFCALLS("jan-feb");
+SELECT CUSTOMERCOUNTFORPLAN("Plan3");

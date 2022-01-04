@@ -46,14 +46,14 @@ INSERT INTO competition VALUES
 (5, "Cricket", "Outdoor");
 
 INSERT INTO student2_competition VALUES
-(1, 1, 1, 2021),
+(1, 1, 1, 2001),
 (2, 2, 2, 2021),
 (3, 3, 1, 2021),
 (4, 4, 2, 2021),
 (5, 5, 3, 2021),
 (1, 5, 4, 2020),
 (1, 2, 5, 2020),
-(3, 1, 6, 2020),
+(3, 1, 6, 2001),
 (3, 2, 7, 2020),
 (5, 3, 3, 2020);
 
@@ -77,3 +77,51 @@ FROM CompetitionNameType;
 
 SELECT *
 FROM StudentRankDetails;
+
+
+-- Drop Functions
+DROP FUNCTION IF EXISTS totalNumberOfCompetitions;
+DROP FUNCTION IF EXISTS totalNumberOfPrizes;
+
+
+-- Create Functions
+delimiter //
+CREATE FUNCTION totalNumberOfCompetitions(competitionType CHAR(15))
+RETURNS INT
+NOT DETERMINISTIC
+READS SQL DATA
+BEGIN
+	DECLARE totalCompetitions INT DEFAULT 0;
+    
+    SELECT COUNT(type)
+    INTO totalCompetitions
+    FROM competition
+    WHERE type = competitionType;
+	
+    RETURN totalCompetitions;	
+END//
+delimiter ;
+
+
+delimiter //
+CREATE FUNCTION totalNumberOfPrizes(studentName CHAR(30))
+RETURNS INT
+NOT DETERMINISTIC
+READS SQL DATA
+BEGIN
+	DECLARE numberOfPrizes INT DEFAULT 0;
+	
+    SELECT COUNT(s.name)
+	INTO numberOfPrizes
+    FROM student2_competition sc
+	JOIN student2 s USING(sreg_no)
+    WHERE sc.year = 2001;
+	
+    RETURN numberOfPrizes;
+END//
+delimiter ;
+
+
+-- Display Function
+SELECT TOTALNUMBEROFCOMPETITIONS("Outdoor");
+SELECT TOTALNUMBEROFPRIZES("Deepak");

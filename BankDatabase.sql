@@ -94,3 +94,47 @@ FROM CustomerAccountDetails;
 
 SELECT *
 FROM FCRoadLoanDetails;
+
+
+-- Drop Functions
+DROP FUNCTION IF EXISTS branchTotalLoanAmount;
+DROP FUNCTION IF EXISTS branchTotalCustomers;
+
+
+-- Create Functions
+delimiter //
+CREATE FUNCTION branchTotalLoanAmount(branch_name CHAR(20))
+RETURNS FLOAT
+NOT DETERMINISTIC
+READS SQL DATA
+BEGIN
+	DECLARE totalLoanAmount FLOAT DEFAULT 0;
+    SET totalLoanAmount = (SELECT SUM(l.loan_amt)
+							FROM loan l
+                            JOIN branch b USING(branch_no)
+                            WHERE b.branch_name = branch_name); 
+	RETURN totalLoanAmount;	
+END//
+delimiter ;
+
+
+delimiter //
+CREATE FUNCTION branchTotalCustomers(branch_name CHAR(20))
+RETURNS INT
+NOT DETERMINISTIC
+READS SQL DATA
+BEGIN
+	DECLARE numberOfCustomers INT DEFAULT 0;
+    SET numberOfCustomers = (SELECT COUNT(a.cust_no)
+							FROM account a
+                            JOIN branch b USING(branch_no)
+                            WHERE b.branch_name = branch_name
+                            GROUP BY b.branch_name);
+	RETURN numberOfCustomers;
+END//
+delimiter ;
+
+
+-- Display Function
+SELECT BRANCHTOTALLOANAMOUNT("F.C Road");
+SELECT BRANCHTOTALCUSTOMERS("F.C Road");

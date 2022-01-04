@@ -92,3 +92,31 @@ FROM DurontoExpCustomerDetails;
 
 SELECT *
 FROM ShatabdiWaitingPassengerNames;
+
+-- Drop Functions
+DROP FUNCTION IF EXISTS numberOfBerthsReserved;
+
+-- Create Functions
+delimiter //
+CREATE FUNCTION numberOfBerthsReserved(trainName VARCHAR(20), departDate DATE)
+RETURNS INT
+NOT DETERMINISTIC
+READS SQL DATA
+BEGIN
+	DECLARE totalBerths INT;
+	
+    SELECT SUM(no_of_berths)
+    INTO totalBerths
+    FROM ticket2 t
+	JOIN train tr USING(train_no)
+    WHERE tr.train_name = trainName AND
+    t.t_date = departDate AND
+    t.status = "C";
+    
+	RETURN totalBerths;
+END//
+delimiter ;
+
+
+-- View Functions
+SELECT NUMBEROFBERTHSRESERVED("Duronto Exp", "2009-06-03");

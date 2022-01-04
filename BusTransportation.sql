@@ -63,12 +63,12 @@ INSERT INTO driver2 VALUES
 (1, "Deepak", 1005, "Pashan", 40, 35000),
 (2, "Fahed", 1006, "Sus Road", 45, 50000),
 (3, "Rohit", 1007, "Baner", 60, 25000),
-(4, "Hritik", 1008, "Aundh", 38, 30000),
+(4, "Hritik", 1008, "Aundh", 38, 50000),
 (5, "Saurabh", 1009, "Dapodi", 47, 25000);
 
 INSERT INTO bus_driver VALUES
 (10, 1, "2021-12-25", 1),
-(10, 2, "2021-12-25", 2),
+(10, 2, "2021-10-25", 2),
 (11, 3, "2021-12-26", 1),
 (11, 2, "2021-12-26", 2),
 (12, 3, "2021-12-27", 1),
@@ -93,3 +93,52 @@ WHERE b.bus_no = 10;
 -- Display View
 SELECT *
 FROM Bus10DriverDetails;
+
+
+-- Drop Functions
+DROP FUNCTION IF EXISTS maxSalaryDriver;
+DROP FUNCTION IF EXISTS allotedDriverDetails;
+
+-- Create Functions
+delimiter //
+CREATE FUNCTION maxSalaryDriver()
+RETURNS CHAR(20)
+NOT DETERMINISTIC
+READS SQL DATA
+BEGIN
+	DECLARE driverName VARCHAR(20) DEFAULT 'NA';
+	
+    SELECT driver_name
+    INTO driverName
+    FROM driver2
+	WHERE salary = (SELECT MAX(salary)
+					FROM driver2)
+	LIMIT 1;
+    
+RETURN driverName;
+END//
+delimiter ;
+
+
+delimiter //
+CREATE FUNCTION allotedDriverDetails(busNo INT, dateOfDuty DATE)
+RETURNS char(20)
+NOT DETERMINISTIC
+READS SQL DATA
+BEGIN
+	DECLARE driverName CHAR(20);
+   
+	SELECT d.driver_name
+    INTO driverName
+    FROM bus_driver bd
+    JOIN driver2 d USING(driver_no)
+    WHERE bd.bus_no = busNo AND bd.date_of_duty = dateOfDuty;
+	
+    RETURN driverName;
+END//
+delimiter ;
+
+
+-- View Functions
+SELECT MAXSALARYDRIVER();
+SELECT ALLOTEDDRIVERDETAILS(10, "2021-12-25");
